@@ -1,25 +1,27 @@
-import { useState } from 'react'
-import NavBar from './Components/NavBar'
-import './App.css'
-import { Routes, Route } from "react-router-dom"
+import { NavBar } from "./Components/NavBar";
+import './App.css';
+import { Routes, Route } from "react-router-dom";
+import AllPosts from "./Components/AllPosts";
+import UserLogin from "./Components/UserLogin";
+import Profile from "./Components/Profile";
+import { useState } from "react";
+import Home from "./Components/Home";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('authToken'));
+  const [selectedPostId, setSelectedPostId] = useState(null); 
 
   return (
-    <>
     <div>
       <div id="main-section">
-          <NavBar />
-          <Routes>
-            <Route path="/posts" element={<Posts />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
+        <NavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+        <Routes>
+          <Route path="/" element={<Home isLoggedIn={loggedIn} />} />
+          <Route path="/posts" element={<AllPosts setSelectedPostId={selectedPostId} />} /> {/* Pass setSelectedPostId */}
+          {loggedIn && <Route path="/profile" element={<Profile />} />}
+          <Route path="/userlogin" element={<UserLogin setLoggedIn={setLoggedIn} />} />
+        </Routes>
       </div>
     </div>
-    </>
-  )
+  );
 }
-
-export default App
