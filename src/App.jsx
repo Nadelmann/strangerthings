@@ -9,7 +9,7 @@ import Home from "./Components/Home";
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('authToken'));
-  const [selectedPostId, setSelectedPostId] = useState(null); 
+
 
   return (
     <div>
@@ -17,7 +17,7 @@ export default function App() {
         <NavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
         <Routes>
           <Route path="/" element={<Home isLoggedIn={loggedIn} />} />
-          <Route path="/posts" element={<AllPosts setSelectedPostId={selectedPostId} />} /> {/* Pass setSelectedPostId */}
+          <Route path="/posts" element={<AllPosts  />} /> {/* Pass setSelectedPostId */}
           {loggedIn && <Route path="/profile" element={<Profile />} />}
           <Route path="/userlogin" element={<UserLogin setLoggedIn={setLoggedIn} />} />
         </Routes>
