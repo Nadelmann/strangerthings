@@ -3,21 +3,24 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 import PostCard from "./Postcard";
 
-export default function AllPosts({ setSelectedPostId }) {
+export default function AllPosts({ setSelectedPostId, currentUser }) {
     const [posts, setPosts] = useState([]);
     const [search, setSearch] = useState("");
     const navigate = useNavigate();
     const COHORT_NAME = '2302-ACC-PT-WEB-PT-C';
 
+
     async function handleClick(postId) {
         try {
             const response = await fetch(`https://strangers-things.herokuapp.com/api/${COHORT_NAME}/posts/${postId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${currentUser.token}`, // Send user token for authorization
+                },
             });
-            
 
             if (response.ok) {
-                setPosts(prevPost => prevPost.filter(post => post.id !== postId));
+                setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
             } else {
                 console.log("Delete request failed.");
             }
@@ -26,43 +29,55 @@ export default function AllPosts({ setSelectedPostId }) {
         }
     }
 
+
     useEffect(() => {
         async function fetchPosts() {
             try {
                 const response = await fetch(`https://strangers-things.herokuapp.com/api/${COHORT_NAME}/posts`);
                 const data = await response.json();
-                console.log(data.post);
-                setPosts(data.data.post);
-                console.log(data.results);
+                if (data.success) {
+                    setPosts(data.data.posts); // Update to use data.data.posts
+                } else {
+                    console.error("Failed to fetch posts:", data.error);
+                }
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching posts:", error);
             }
         }
         fetchPosts();
-    }, []); 
+    }, []);
 
     const handleSearchChange = (event) => {
         setSearch(event.target.value);
     };
 
+    const filteredPosts = posts.filter((post) => {
+        return post.title.toLowerCase().includes(search.toLowerCase());
+    });
+
     return (
         <div>
             <h1 style={{ textAlign: 'center' }}>All Posts</h1>
+            {/* Search input */}
             <input
                 type="text"
-                placeholder="Search posts..."
+                placeholder="Search..."
                 value={search}
                 onChange={handleSearchChange}
             />
+
+            {/* Render filtered posts and delete buttons based on user authorization */}
             <div>
-                {posts.map((post) => (
-                    <div key={post.id}>
+                {filteredPosts.map((post) => (
+                    <div key={post._id}>
                         <PostCard
                             post={post}
                             setSelectedPostId={setSelectedPostId}
                         />
-                        <button className="detailsButton" onClick={() => navigate(`/posts/${post.id}`)}>Details</button>
-                        <button className="removeButton" onClick={() => handleClick(post.id)}>Remove Post</button>
+                        <button className="detailsButton" onClick={() => navigate(`/allposts/${post._id}`)}>Details</button>
+                        {currentUser && currentUser.userId === post.userId && (
+                            <button className="removeButton" onClick={() => handleClick(post._id)}>Remove Post</button>
+                        )}
                     </div>
                 ))}
             </div>
@@ -72,4 +87,6 @@ export default function AllPosts({ setSelectedPostId }) {
 
 AllPosts.propTypes = {
     setSelectedPostId: PropTypes.func.isRequired,
-};
+    currentUser: PropTypes.object, // Current user information (including userId and token)
+}
+

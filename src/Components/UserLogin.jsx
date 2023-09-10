@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-function UserLogin({ onLogin }) {
+const UserLogin = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
 
   const COHORT_NAME = '2302-ACC-PT-WEB-PT-C';
   const BASE_URL = `https://strangers-things.herokuapp.com/api/${COHORT_NAME}`;
-
+  
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -26,18 +26,20 @@ function UserLogin({ onLogin }) {
 
   const login = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/users/login`, {
+      const response = await fetch(`${BASE_URL}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           user: {
-            username,
-            password,
+            username: username,
+            password: password,
           },
         }),
       });
+
+      console.log('Response:', response);
 
       const result = await response.json();
 
@@ -45,7 +47,7 @@ function UserLogin({ onLogin }) {
         if (result.data && result.data.token) {
           const token = result.data.token;
           localStorage.setItem('authToken', token);
-          localStorage.setItem('username', result.data.username); 
+          localStorage.setItem('username', result.data.username);
 
           await Authenticate(token);
 
@@ -81,14 +83,10 @@ function UserLogin({ onLogin }) {
     }
   };
 
-  UserLogin.propTypes = {
-    onLogin: PropTypes.func.isRequired, 
-  };
-
   return (
     <div>
       <h2>Login</h2>
-      {error && <p style={{ color: 'blue' }}>{error}</p>}
+      {error && <p>{error}</p>} 
       <form onSubmit={handleSubmit}>
         <label>
           Username: <input value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -103,3 +101,7 @@ function UserLogin({ onLogin }) {
 }
 
 export default UserLogin;
+
+UserLogin.propTypes = {
+  onLogin: PropTypes.func.isRequired,
+};

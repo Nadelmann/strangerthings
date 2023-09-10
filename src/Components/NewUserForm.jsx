@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function NewUser() {
+export function NewUserForm() {
   const [error, setError] = useState(null);
   const COHORT_NAME = '2302-ACC-PT-WEB-PT-C';
 
@@ -45,11 +45,11 @@ export function NewUser() {
       {error && <p>{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>
-          User: <input type="text" name="Username" />
+          Username: <input type="text" name="Username" />
         </label>{" "}
         <br />
         <label>
-          Password: <input type="text" name="password" />
+          Password: <input type="password" name="password" />
         </label>{" "}
         <br />
 

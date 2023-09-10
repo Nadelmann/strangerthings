@@ -6,13 +6,13 @@ export default function PostCard({ post, setSelectedPostId }) {
             <div
                 className="card"
                 onClick={() => {
-                    setSelectedPostId(post.id);
+                    setSelectedPostId(post._id);
                 }}
             >
                 <h1>{post.title}</h1>
-                <p>Author: {post.author.username}</p>
-                <p> {post.price}</p>
-                <p> {post.description}</p>
+                {post.author && <p>Author: {post.author.username}</p>}
+                <p>Price: {post.price}</p>
+                <p>Description: {post.description}</p>
             </div>
         </div>
     );
@@ -20,13 +20,11 @@ export default function PostCard({ post, setSelectedPostId }) {
 
 PostCard.propTypes = {
     post: PropTypes.shape({
-        username: PropTypes.string.isRequired,
         price: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
-        cohortId: PropTypes.number.isRequired,
-        author: PropTypes.string.isRequired,
-        id: PropTypes.number.isRequired,
+        author: PropTypes.object, // Allow author to be missing or undefined
+        _id: PropTypes.string.isRequired, // Use _id as the ID property
     }).isRequired,
     setSelectedPostId: PropTypes.func.isRequired,
 };

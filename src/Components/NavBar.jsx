@@ -8,7 +8,8 @@ export function NavBar() {
         <Link to="/">Home</Link>{"    "}
         <Link to="/allposts">Posts</Link>{"    "}
         <Link to="/profile">Profile</Link>{"    "}
-        <Link to="/login">Login</Link>{"    "}
+        <Link to="/userlogin">Login</Link>{"    "}
+        <Link to="/newuserform">Register</Link>{"    "}
       </div>
     </nav>
   );
