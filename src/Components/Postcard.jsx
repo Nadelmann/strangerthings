@@ -23,8 +23,8 @@ PostCard.propTypes = {
         price: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
-        author: PropTypes.object, // Allow author to be missing or undefined
-        _id: PropTypes.string.isRequired, // Use _id as the ID property
+        author: PropTypes.object, 
+        _id: PropTypes.string.isRequired, 
     }).isRequired,
     setSelectedPostId: PropTypes.func.isRequired,
 };

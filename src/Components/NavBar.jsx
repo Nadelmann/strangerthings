@@ -7,7 +7,6 @@ export function NavBar() {
         <h2>Stranger Things</h2>
         <Link to="/">Home</Link>{"    "}
         <Link to="/allposts">Posts</Link>{"    "}
-        <Link to="/profile">Profile</Link>{"    "}
         <Link to="/userlogin">Login</Link>{"    "}
         <Link to="/newuserform">Register</Link>{"    "}
       </div>

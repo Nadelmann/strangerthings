@@ -15,7 +15,7 @@ export default function Profile() {
   const fetchYourPosts = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://strangers-things.herokuapp.com/api/2302-ACC-PT-WEB-PT-C/posts`,
+        `https://strangers-things.herokuapp.com/api/2302-ACC-PT-WEB-PT-C/users/me`,
         {
           method: 'GET',
           headers: {

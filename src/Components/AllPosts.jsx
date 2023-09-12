@@ -1,34 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 import PostCard from "./Postcard";
+import PostDetails from "./PostDetails";
 
-export default function AllPosts({ setSelectedPostId, currentUser }) {
+export default function AllPosts({ setSelectedPostId }) {
     const [posts, setPosts] = useState([]);
     const [search, setSearch] = useState("");
-    const navigate = useNavigate();
+    const [selectedPost, setSelectedPost] = useState(null);
     const COHORT_NAME = '2302-ACC-PT-WEB-PT-C';
-
-
-    async function handleClick(postId) {
-        try {
-            const response = await fetch(`https://strangers-things.herokuapp.com/api/${COHORT_NAME}/posts/${postId}`, {
-                method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${currentUser.token}`, // Send user token for authorization
-                },
-            });
-
-            if (response.ok) {
-                setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
-            } else {
-                console.log("Delete request failed.");
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
 
     useEffect(() => {
         async function fetchPosts() {
@@ -36,7 +15,7 @@ export default function AllPosts({ setSelectedPostId, currentUser }) {
                 const response = await fetch(`https://strangers-things.herokuapp.com/api/${COHORT_NAME}/posts`);
                 const data = await response.json();
                 if (data.success) {
-                    setPosts(data.data.posts); // Update to use data.data.posts
+                    setPosts(data.data.posts); 
                 } else {
                     console.error("Failed to fetch posts:", data.error);
                 }
@@ -47,8 +26,12 @@ export default function AllPosts({ setSelectedPostId, currentUser }) {
         fetchPosts();
     }, []);
 
-    const handleSearchChange = (event) => {
-        setSearch(event.target.value);
+    const handleDetailsClick = (post) => {
+        setSelectedPost(post); 
+    };
+
+    const handleCloseDetails = () => {
+        setSelectedPost(null);
     };
 
     const filteredPosts = posts.filter((post) => {
@@ -57,36 +40,40 @@ export default function AllPosts({ setSelectedPostId, currentUser }) {
 
     return (
         <div>
-            <h1 style={{ textAlign: 'center' }}>All Posts</h1>
-            {/* Search input */}
+            <h1 style={{ textAlign: "center" }}>All Posts</h1>
+            {/* ... */}
             <input
                 type="text"
                 placeholder="Search..."
                 value={search}
-                onChange={handleSearchChange}
+                onChange={(e) => setSearch(e.target.value)}
             />
+            {filteredPosts.map((post) => (
+                <div key={post._id}>
+                    <PostCard post={post} setSelectedPostId={setSelectedPostId} />
+                    <button
+                        className="detailsButton"
+                        onClick={() => handleDetailsClick(post)}
+                    >
+                        Details
+                    </button>
+                </div>
+            ))}
 
-            {/* Render filtered posts and delete buttons based on user authorization */}
-            <div>
-                {filteredPosts.map((post) => (
-                    <div key={post._id}>
-                        <PostCard
-                            post={post}
-                            setSelectedPostId={setSelectedPostId}
-                        />
-                        <button className="detailsButton" onClick={() => navigate(`/allposts/${post._id}`)}>Details</button>
-                        {currentUser && currentUser.userId === post.userId && (
-                            <button className="removeButton" onClick={() => handleClick(post._id)}>Remove Post</button>
-                        )}
-                    </div>
-                ))}
-            </div>
+            {selectedPost && ( 
+                <PostDetails
+                    selectedPost={{
+                        ...selectedPost,
+                        price: parseFloat(selectedPost.price) 
+                    }}
+                    onClose={handleCloseDetails}
+                />
+            )}
         </div>
     );
 }
 
+
 AllPosts.propTypes = {
     setSelectedPostId: PropTypes.func.isRequired,
-    currentUser: PropTypes.object, // Current user information (including userId and token)
-}
-
+};
