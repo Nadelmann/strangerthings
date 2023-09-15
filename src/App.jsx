@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { NavBar } from "./Components/NavBar";
+import './App.css';
+import { Navigate, Routes, Route } from "react-router-dom"; 
+import AllPosts from "./Components/AllPosts";
+import UserLogin from "./Components/UserLogin";
+import Profile from "./Components/Profile";
+import { useState } from "react";
+import Home from "./Components/Home";
+import { NewUserForm } from "./Components/NewUserForm";
 
-function App() {
-  const [count, setCount] = useState(0)
+
+export default function App() {
+  const [isLoggedIn, setLoggedIn] = useState(!!localStorage.getItem('authToken'));
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  
+  const handleSelectPost = (postId) => {
+    setSelectedPostId(postId);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
 
-export default App
+      <div>
+        <div id="main-section">
+          <NavBar isLoggedIn={isLoggedIn} handleLogin={setLoggedIn} />
+          <Routes>
+            <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
+            <Route path="/allposts" element={<AllPosts setSelectedPostId={handleSelectPost} />} />
+              <Route
+                  path="/profile"
+                   element={
+                     isLoggedIn ? (
+                 <Profile />
+                      ) : (
+              <Navigate to="/userlogin" replace />
+      )
+    }
+  />
+  <Route path="/userlogin" element={<UserLogin onLogin={setLoggedIn} />} />
+  <Route path="/newuserform" element={<NewUserForm />} />
+</Routes>
+
+        </div>
+      </div>
+
+  );
+}
